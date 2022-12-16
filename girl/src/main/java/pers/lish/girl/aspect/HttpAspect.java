@@ -41,7 +41,7 @@ public class HttpAspect {
 //    @Pointcut("execution(public * com.imooc.service..*Service.*(..)) throws Exception")
 //    @Pointcut("execution(public String com.imooc.service..*Service.*(..))")
 //    @Pointcut("execution(public void com.imooc.service..*Service.*(..))")
-    @Pointcut("@Within(org.springframework.web.bind.annotation.RestController)")
+    @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
     public void log() {
     }
 
