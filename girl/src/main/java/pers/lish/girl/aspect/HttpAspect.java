@@ -1,10 +1,12 @@
 package pers.lish.girl.aspect;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -33,45 +35,67 @@ public class HttpAspect {
     /**
      * 日志的打印
      */
-    private  final static Logger log= LoggerFactory.getLogger(HttpAspect.class);
+    private final static Logger log = LoggerFactory.getLogger(HttpAspect.class);
+
     //方法修饰符+任意返回值（*）+包名及子包+类+任意方法（*）+（..）（任意参数:无参则为(),第一个参数为Long的(Long)）+只拦截抛出异常的方法
 //    @Pointcut("execution(public * com.imooc.service..*Service.*(..)) throws Exception")
 //    @Pointcut("execution(public String com.imooc.service..*Service.*(..))")
 //    @Pointcut("execution(public void com.imooc.service..*Service.*(..))")
-    @Pointcut("execution(public * pers.lish.girl.controller.GirlController.*(..))")
-    public void log(){
+    @Pointcut("@Within(org.springframework.web.bind.annotation.RestController)")
+    public void log() {
     }
+
+    //    @Pointcut("execution(public * pers.lish.girl.controller.GirlController.*(..))")
+//    public void log(){
+//    }
     @Before("log()")
-    public void before(JoinPoint joinPoint){
+    public void before(JoinPoint joinPoint) {
         log.info("log调用开始-----------------");
         //url获取
-       ServletRequestAttributes requestAttributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
-       HttpServletRequest request = requestAttributes.getRequest();
-       log.info("url={}",request.getRequestURI());
-       log.info("method={}",request.getMethod());
-       log.info("ip={}",request.getRemoteAddr());
-       log.info("class_method={}",joinPoint.getSignature().getDeclaringTypeName()+"."+joinPoint.getSignature().getName());
-       log.info("args={}",joinPoint.getArgs());
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+        log.info("url={}", request.getRequestURI());
+        log.info("method={}", request.getMethod());
+        log.info("ip={}", request.getRemoteAddr());
+        log.info("remote={}-{}-{}", request.getRemoteAddr(), request.getRemoteHost(), request.getRemotePort());
+        log.info("class_method={}", joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+        log.info("args={}", joinPoint.getArgs());
 
     }
-    @After("log()")
-    public void after(){
-        log.info("log调用结束-----------------");
-//        System.err.print("调用结束-----------------");
+
+//    @After("log()")
+//    public void after() {
+//        log.info("log调用结束-----------------");
+////        System.err.print("调用结束-----------------");
+//    }
+
+
+    @Around("log()")
+    public Object printTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        Object proceed = proceedingJoinPoint.proceed();
+        stopWatch.stop();
+        log.info("接口耗时--------------秒：{}/换算毫秒：{}", stopWatch.getTotalTimeSeconds(), stopWatch.getTotalTimeMillis());
+        return proceed;
     }
 
     /**
      * 接口响应内容获取
+     *
      * @param o
      */
-    @AfterReturning(returning = "o",pointcut = "log()")
-    public void  returning(Object o){
-        log.info("response={}",o.toString());
+    @AfterReturning(returning = "o", pointcut = "log()")
+    public void returning(Object o) {
+        log.info("response={}", o.toString());
+//        log.info("response={}", JSON.toJSONString(o));
     }
 
-    /**
-     * 万能注解
-     */
+/**
+ * 万能注解
+ * 以注解形式定义与方法级别上
+ * 所有带有注解@AdmainOnly的方法都要经过此拦截器---此注解写全类名
+ */
 //    @Around("log()")
 //    public Object  around(ProceedingJoinPoint proceedingJoinPoint){
 //        log.error("before={}",proceedingJoinPoint.getSignature().getName());
@@ -87,10 +111,10 @@ public class HttpAspect {
 //        }
 //        return  result;
 //    }
-    /*********************以注解形式定义与方法级别上**************************************************************/
-    /**
-     * 所有带有注解@AdmainOnly的方法都要经过此拦截器---此注解写全类名
-     */
+/*********************以注解形式定义与方法级别上**************************************************************/
+/**
+ * 所有带有注解@AdmainOnly的方法都要经过此拦截器---此注解写全类名
+ */
     /*@Pointcut("@annotation(pers.lish.girl.security.AdmainOnly)")
     public void admainOnly(){
 
