@@ -53,5 +53,16 @@
         未ack的消息会重新入队
     4.持久化队列：
         如果已经存在没有持久化的队列，那么直接创建就会报错，需要先删除再创建
-    
+        //第三个参数 让消息实现持久化，将消息标记为持久化并不能完全保证不会丢失消息。尽管它告诉 RabbitMQ 将消息保存到磁盘，但是
+            //这里依然存在当消息刚准备存储在磁盘的时候 但是还没有存储完，消息还在缓存的一个间隔点。此时并没
+            //有真正写入磁盘。持久性保证并不强，但是对于我们的简单任务队列而言，这已经绰绰有余了。如果需要
+            //更强有力的持久化策略，参考后边课件发布确认章节
+                channel.basicPublish("", TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
+    5.预取值
+        当 prefetchCount设置为1的时候为不公平分发，
+        >=1的时候为预取值，等同于线程池一样，例如prefetchCount=5，表示最多能预分5条数据，等待应答，若其中一条ack了，则此时还能在进一条继续等待。
+        int prefetchCount = 2;
+        channel.basicQos(prefetchCount);
+
+
 # 6.

@@ -26,7 +26,10 @@ public class Work04 {
 //        任务，然后 rabbitmq 就会把该任务分配给没有那么忙的那个空闲消费者，当然如果所有的消费者都没有完
 //        成手上任务，队列还在不停的添加新任务，队列有可能就会遇到队列被撑满的情况，这个时候就只能添加
 //        新的 worker 或者改变其他存储任务的策略。
-        channel.basicQos(1);
+//        int prefetchCount = 1;
+//        预取值
+        int prefetchCount = 5;
+        channel.basicQos(prefetchCount);
         //采用手动应答
         boolean autoAck = false;
         channel.basicConsume(ACK_QUEUE_NAME, autoAck, deliverCallback, (consumerTag) -> {
