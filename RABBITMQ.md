@@ -63,6 +63,29 @@
         >=1的时候为预取值，等同于线程池一样，例如prefetchCount=5，表示最多能预分5条数据，等待应答，若其中一条ack了，则此时还能在进一条继续等待。
         int prefetchCount = 2;
         channel.basicQos(prefetchCount);
-
+    6.发布确认：-如何保证消息一定是存储成功的
+        1.设置要求队列必须持久化
+            pers.li.$3messageAsk.Task02
+                //第二个参数修改为true，使消息队列持久化，如果队列存在，则需要先删除再执行该代码
+                channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+        2.设置队列中的消息必须持久化
+            pers.li.$3messageAsk.Task02
+                //第三个参数
+                channel.basicPublish("", TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
+        3.发布确认，需要等待mq回执说明消息已经成功保存到磁盘
+            开启发布确认：
+                try (Channel channel = RabbitMqUtils.getChannel()) {
+                //开启确认发布
+                channel.confirmSelect();
+            发布确认的三种方式：
+                单个确认发布-同步确认：
+                批量确认发布:
+                    优点：上面那种方式非常慢，与单个等待确认消息相比，先发布一批消息然后一起确认可以极大地
+                            提高吞吐量
+                    缺点：当发生故障导致发布出现问题时，不知道是哪个消息出现问题了，我们必须将整个批处理保存在内存中，
+                        以记录重要的信息而后重新发布消息。当然这种方案仍然是同步的，也一样阻塞消息的发布
+                异步确认发布：速度最快，回调实现，并且可以确定哪个投递失败，常用
+                    
+                    
 
 # 6.
