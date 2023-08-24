@@ -17,7 +17,7 @@ public class ReceiveLogsDirect01 {
         System.out.println("等待接收消息.....");
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            message = "接收绑定键:" + delivery.getEnvelope().getRoutingKey() + ",消息:" + message;
+//            message = "接收绑定键:" + delivery.getEnvelope().getRoutingKey() + ",消息:" + message;
 //            File file = new File("D:\\work\\rabbitmq_info.txt");
 //            FileUtils.writeStringToFile(file, message, "UTF-8");
 //            System.out.println("错误日志已经接收");
