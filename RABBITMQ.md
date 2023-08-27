@@ -167,3 +167,9 @@
             http://localhost:8080/ttl/sendDelayMsg/你好 2/2000
             第二个先消费，符合预期
         此示例中插件未安装，因此无法测试，需要注释掉
+        总结：rabbitmq可集群，不会有单点故障
+            其他方案：
+                1.java 的 DelayQueue
+                2.redis的zset
+                3.quartz
+                4.kafka时间轮
