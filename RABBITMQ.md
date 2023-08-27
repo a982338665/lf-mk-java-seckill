@@ -151,5 +151,18 @@
         http://localhost:8080/ttl/sendMsg/hhh
         http://localhost:8080/ttl/sendExpirationMsg/你好 1/20000
         http://localhost:8080/ttl/sendExpirationMsg/你好 2/2000
-    
-     
+        第一个消费完才消费第二个，不符合预期
+    4.缺点：
+        RabbitMQ 只会检查第一个消息是否过期，如果过期则丢到死信队列，
+        如果第一个消息的延时时长很长，而第二个消息的延时时长很短，第二个消息并不会优先得到执行
+        基于死信队列的会由此问题，可通过插件解决。
+    5.解决：使用mq插件实现延迟队列
+        1.官网下载：https://www.rabbitmq.com/community-pligins.html
+        2.然后解压到rabbitmq的插件目录下
+        3.进入安装目录下的plugins目录，执行下面命令使插件生效，然后重启rabbitmq
+            /usr/lib/rabbitmq/lib/rabbitmq_server-3.8.8/plugins
+            rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+        4.测试符合预期
+            http://localhost:8080/ttl/sendDelayMsg/你好 1/20000
+            http://localhost:8080/ttl/sendDelayMsg/你好 2/2000
+            第二个先消费，符合预期
