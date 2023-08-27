@@ -166,3 +166,4 @@
             http://localhost:8080/ttl/sendDelayMsg/你好 1/20000
             http://localhost:8080/ttl/sendDelayMsg/你好 2/2000
             第二个先消费，符合预期
+        此示例中插件未安装，因此无法测试，需要注释掉
