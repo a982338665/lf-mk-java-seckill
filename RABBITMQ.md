@@ -173,3 +173,17 @@
                 2.redis的zset
                 3.quartz
                 4.kafka时间轮
+
+# 8.发布确认高级 - 需要回调通知
+    
+    #在配置文件当中需要添加
+        #spring.rabbitmq.publisher-confirm-type=correlated
+        # NONE
+        #禁用发布确认模式，是默认值
+        # CORRELATED
+        #发布消息成功到交换器后会触发回调方法
+        # SIMPLE
+        #经测试有两种效果，其一效果和 CORRELATED 值一样会触发回调方法，
+        #其二在发布消息成功后使用 rabbitTemplate 调用 waitForConfirms 或 waitForConfirmsOrDie 方法
+        #等待 broker 节点返回发送结果，根据返回结果来判定下一步的逻辑，要注意的点是
+        #waitForConfirmsOrDie 方法如果返回 false 则会关闭 channel，则接下来无法发送消息到 broker
