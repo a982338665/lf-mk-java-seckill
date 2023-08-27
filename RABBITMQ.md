@@ -147,6 +147,9 @@
         3.用户注册成功后，如果三天内没有登陆则进行短信提醒。
         4.用户发起退款，如果三天内没有得到处理则通知相关运营人员。
         5.预定会议后，需要在预定的时间点前十分钟通知各个与会人员参加会议
-    
+    3.启动测试：
+        http://localhost:8080/ttl/sendMsg/hhh
+        http://localhost:8080/ttl/sendExpirationMsg/你好 1/20000
+        http://localhost:8080/ttl/sendExpirationMsg/你好 2/2000
     
      
