@@ -30,6 +30,8 @@ public class Consumer01 {
         params.put("x-dead-letter-exchange", DEAD_EXCHANGE);
         //正常队列设置死信 routing-key 参数 key 是固定值
         params.put("x-dead-letter-routing-key", "lisi");
+//        过期时间，也可以在此处设置，也可以在生产者那里设置，一般会在生产者那里设置，因为可以随时更改，此处表示设置10s
+//        params.put("x-message-ttl",100000);
 
         String normalQueue = "normal-queue";
         channel.queueDeclare(normalQueue, false, false, false, params);
