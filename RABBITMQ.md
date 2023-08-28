@@ -229,4 +229,21 @@
         队列优先级设置
         消息优先级设置
         
+# 11.惰性队列
     
+    RabbitMQ 从 3.6.0 版本开始引入了惰性队列的概念。惰性队列会尽可能的将消息存入磁盘中，而在消
+        费者消费到相应的消息时才会被加载到内存中，它的一个重要的设计目标是能够支持更长的队列，即支持
+        更多的消息存储。
+    需要存盘，所以慢，因此一般不使用
+    使用场景：消费者宕机，造成消息积压时使用
+        队列具备两种模式：default 和 lazy。默认的为 default 模式，在 3.6.0 之前的版本无需做任何变更。lazy
+        模式即为惰性队列的模式，可以通过调用 channel.queueDeclare 方法的时候在参数中设置，也可以通过
+        Policy 的方式设置，如果一个队列同时使用这两种方式设置的话，那么 Policy 的方式具备更高的优先级。
+        如果要通过声明的方式改变已有队列的模式的话，那么只能先删除队列，然后再重新声明一个新的。
+        在队列声明的时候可以通过“x-queue-mode”参数来设置队列的模式，取值为“default”和“lazy”。下面示
+        例中演示了一个惰性队列的声明细节：
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("x-queue-mode", "lazy");
+        channel.queueDeclare("myqueue", false, false, false, args);
+    
+# 12.
