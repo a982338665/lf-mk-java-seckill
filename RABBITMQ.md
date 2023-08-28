@@ -176,14 +176,26 @@
 
 # 8.发布确认高级 - 需要回调通知
     
-    #在配置文件当中需要添加
-        #spring.rabbitmq.publisher-confirm-type=correlated
-        # NONE
-        #禁用发布确认模式，是默认值
-        # CORRELATED
-        #发布消息成功到交换器后会触发回调方法
-        # SIMPLE
-        #经测试有两种效果，其一效果和 CORRELATED 值一样会触发回调方法，
-        #其二在发布消息成功后使用 rabbitTemplate 调用 waitForConfirms 或 waitForConfirmsOrDie 方法
-        #等待 broker 节点返回发送结果，根据返回结果来判定下一步的逻辑，要注意的点是
-        #waitForConfirmsOrDie 方法如果返回 false 则会关闭 channel，则接下来无法发送消息到 broker
+    1.消息到交换机的发布确认
+        #在配置文件当中需要添加
+            #spring.rabbitmq.publisher-confirm-type=correlated
+            # NONE
+            #禁用发布确认模式，是默认值
+            # CORRELATED
+            #发布消息成功到交换器后会触发回调方法
+            # SIMPLE
+            #经测试有两种效果，其一效果和 CORRELATED 值一样会触发回调方法，
+            #其二在发布消息成功后使用 rabbitTemplate 调用 waitForConfirms 或 waitForConfirmsOrDie 方法
+            #等待 broker 节点返回发送结果，根据返回结果来判定下一步的逻辑，要注意的点是
+            #waitForConfirmsOrDie 方法如果返回 false 则会关闭 channel，则接下来无法发送消息到 broker
+        此种方式：仅能确定消息发送到了 交换机，还不能保证已经进入队列，因为路由key不一定存在，如果找不到对应队列就会丢弃消息
+    2.回退消息：
+        Mandatory 参数 
+        在仅开启了生产者确认机制的情况下，交换机接收到消息后，会直接给消息生产者发送确认消息，如
+        果发现该消息不可路由，那么消息会被直接丢弃，此时生产者是不知道消息被丢弃这个事件的。那么如何
+        让无法被路由的消息帮我想办法处理一下？最起码通知我一声，我好自己处理啊。通过设置 mandatory 参
+        数可以在当消息传递过程中不可达目的地时将消息返回给生产者
+            1.添加配置：打开回退
+                spring.rabbitmq.publisher-returns=true
+            2.修改代码
+                

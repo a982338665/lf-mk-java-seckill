@@ -1,13 +1,14 @@
 package pers.li.rabbitmqspringboot.callback;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class MyCallBack implements RabbitTemplate.ConfirmCallback {
+public class MyCallBack implements RabbitTemplate.ConfirmCallback,RabbitTemplate.ReturnCallback {
     /**
      * 交换机不管是否收到消息的一个回调方法
      * CorrelationData
@@ -23,5 +24,12 @@ public class MyCallBack implements RabbitTemplate.ConfirmCallback {
         } else {
             log.info("交换机还未收到 id 为:{}消息,由于原因:{}", id, cause);
         }
+    }
+
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, String
+            exchange, String routingKey) {
+        log.error(" 消 息 {}, 被交换机 {} 退回，退回原因 :{}, 路 由 key:{}",new
+                String(message.getBody()),exchange,replyText,routingKey);
     }
 }
