@@ -1,6 +1,7 @@
 package pers.li.rabbitmqspringboot.web;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +36,14 @@ public class SendMsgController {
         rabbitTemplate.convertAndSend("X", "XB", "消息来自 ttl 为 40S 的队列: " + message);
     }
 
-    @GetMapping("sendExpirationMsg/{message}/{ttlTime}")
-    public void sendMsg(@PathVariable String message, @PathVariable String ttlTime) {
+    @GetMapping("sendExpirationMsg/{message}/{ttlTime}/{order}")
+    public void sendMsg(@PathVariable String message, @PathVariable String ttlTime, @PathVariable Integer order) {
         rabbitTemplate.convertAndSend("X", "XC", message, correlationData -> {
-            correlationData.getMessageProperties().setExpiration(ttlTime);
+//            correlationData.getMessageProperties().setExpiration(ttlTime);
+            MessageProperties messageProperties = correlationData.getMessageProperties();
+            messageProperties.setExpiration(ttlTime);
+//            消息添加优先级,数越大越优先
+            messageProperties.setPriority(order);
             return correlationData;
         });
         log.info("当前时间：{},发送一条时长{}毫秒 TTL 信息给队列 C:{}", new Date(), ttlTime, message);

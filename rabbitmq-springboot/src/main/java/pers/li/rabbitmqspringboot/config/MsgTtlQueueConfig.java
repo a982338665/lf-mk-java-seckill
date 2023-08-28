@@ -21,6 +21,8 @@ public class MsgTtlQueueConfig {
         args.put("x-dead-letter-exchange", Y_DEAD_LETTER_EXCHANGE);
         //声明当前队列的死信路由 key
         args.put("x-dead-letter-routing-key", "YD");
+//        设置优先级:官方允许是 0-255 之间，此处设置10，说明允许优先级的范围为 0-10，不要设置过大 ，浪费cpu及内存
+        args.put("x-max-priority",10);
         //没有声明 TTL 属性
         return QueueBuilder.durable(QUEUE_C).withArguments(args).build();
     }
