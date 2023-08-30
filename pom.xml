@@ -13,6 +13,8 @@
     <module>seckill_service</module>
     <module>seckill_web</module>
     <module>girl</module>
+    <module>rabbitmq-hello</module>
+    <module>rabbitmq-base</module>
   </modules>
 
 
